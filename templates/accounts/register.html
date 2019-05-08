@@ -1,0 +1,19 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <label>USERNAME</label>
+        <input type="text" name="username"><br>
+        <label>PASSWORD</label>
+        <input type="password" name="password"><br>
+        <label>CONFIRM PASSWORD</label>
+        <input type="password" name="confirmpass"><br>
+        <button type="submit">REGISTER</button>
+        <a href="{% url 'login' %}">Already have an account?</a>
+        {% if error %}
+            <p>*{{ error }}</p>
+        {% endif %}
+    </form>
+
+
+{% endblock %}

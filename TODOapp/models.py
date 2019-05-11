@@ -6,13 +6,13 @@ from django.utils import timezone
 class Todo(models.Model):
 
     CHOISES = (
-        (True, 'COMPLATED'),
-        (False, 'NOT COMPLATED'),
+        (True, 'COMPLETED'),
+        (False, 'NOT COMPLETED'),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     text = models.TextField(max_length=100, null=False)
-    is_complated = models.BooleanField(choices=CHOISES, null=False)
+    is_completed = models.BooleanField(choices=CHOISES, null=False, default=False)
     created = models.DateTimeField(auto_now=True)
     modified = models.DateTimeField(auto_now=True)
 

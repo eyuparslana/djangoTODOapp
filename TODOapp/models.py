@@ -6,8 +6,8 @@ from django.utils import timezone
 class Todo(models.Model):
 
     CHOISES = (
-        (True, 'COMPLETED'),
-        (False, 'NOT COMPLETED'),
+        ('COMPLETED', True),
+        ('NOT COMPLETED', False),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)

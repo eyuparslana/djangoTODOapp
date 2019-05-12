@@ -81,18 +81,21 @@
                             </td>
                         {% endif %}
                         <td>{{ todo.created }}</td>
-                        <td>{{ todo.updated }}</td>
+                        <td>{{ todo.modified }}</td>
 
                         {% if todo.user == active_user %}
                             <td>
                                 {% if todo.is_completed %}
-                                    <button formaction="{% url 'status' %}" name="ds{{ todo.id }}" class="btn btn-dark">
+                                    <button formaction="{% url 'status' %}" name="stodo{{ todo.id }}"
+                                            class="btn btn-dark">
                                         <b>Not Complete</b></button>
                                 {% else %}
-                                    <button formaction="{% url 'status' %}" class="btn btn-info"><b>Complete</b>
+                                    <button formaction="{% url 'status' %}" name="stodo{{ todo.id }}"
+                                            class="btn btn-info"><b>Complete</b>
                                     </button>
                                 {% endif %}
-                                <button class="btn btn-danger"><b>Delete</b></button>
+                                <button formaction="{% url 'status' %}" name="dtodo{{ todo.id }}"
+                                        class="btn btn-danger"><b>Delete</b></button>
                             </td>
                         {% else %}
                             <td>
@@ -109,5 +112,28 @@
                 {% endfor %}
             </table>
         </form>
+    </div>
+    <div>
+        {% if todos.has_other_pages %}
+            <ul class="pagination">
+                {% if todos.has_previous %}
+                    <li><a href="?page={{ todos.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in todos.paginator.page_range %}
+                    {% if todos.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if todos.has_next %}
+                    <li><a href="?page={{ todos.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+            </ul>
+        {% endif %}
     </div>
 {% endblock %}

@@ -1,17 +1,23 @@
 {% extends 'accounts/base.html' %}
 {% block content %}
-    <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <label>USERNAME</label>
-        <input type="text" name="username"><br>
-        <label>PASSWORD</label>
-        <input type="password" name="password"><br>
-        <button type="submit">LOGIN</button>
-        <a href="{% url 'register' %}">Create an account?</a>
-        {% if error %}
-            <p>*{{ error }}</p>
-        {% endif %}
-    </form>
+
+    <div class='form animated bounceIn'>
+        <h1>Todo App</h1>
+        <h2>Login To Your Account</h2>
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <input name="username" placeholder='Username' type='text'>
+            <input name="password" placeholder='Password' type='password'>
+            <button type="submit" class='animated infinite pulse'>Login</button>
+            <button formmethod="get" formaction="{% url 'register' %}" type="submit" class='animated infinite pulse'>
+                Register
+            </button>
+            {% if error %}
+                <p class="errors">*{{ error }}</p>
+            {% endif %}
+        </form>
+    </div>
+
 
 
 {% endblock %}

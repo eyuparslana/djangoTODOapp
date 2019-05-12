@@ -16,7 +16,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-
 </head>
 <body>
 <div class="card text-center">
@@ -26,16 +25,17 @@
                 <a style="color: white;" class="nav-link" href="{% url 'todos' %}">Home</a>
             </li>
             <li class="nav-item">
-                <a style="color: white;" class="nav-link" href="#">Statistics</a>
+                <a style="color: white;" class="nav-link" href="{% url 'statistics' %}">Statistics</a>
             </li>
             <li class="nav-item">
-                <a style="background: royalblue" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                <a style="background: royalblue" class="btn btn-secondary dropdown-toggle" href="#" role="button"
+                   id="dropdownMenuLink"
                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     User
                 </a>
                 <div class="dropdown-menu float-right" aria-labelledby="dropdownMenuLink">
                     <a class="dropdown-item" href="{% url 'profile' %}">Profile</a>
-                    <a class="dropdown-item" href="#">Logout</a>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                 </div>
             </li>
         </ul>

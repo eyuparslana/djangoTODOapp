@@ -1,17 +1,19 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth.views import login_required
 from .models import Todo
 from django.contrib.auth.models import User
 import csv
-import os
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 
 
 @login_required
 def todo_view(request):
     todos = Todo.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(todos, 5)
     context = {
-        'todos': todos,
+        'todos': paginator.page(page),
         'active_user': request.user
     }
     return render(request, 'todoapp/home.html', context)
@@ -36,6 +38,7 @@ def profile_view(request):
     return render(request, 'todoapp/profile.html', {'user': request.user})
 
 
+@login_required
 def add_todo(request):
     if request.POST:
         todo = request.POST['todo']
@@ -44,10 +47,11 @@ def add_todo(request):
         if not todo:
             todos = Todo.objects.all()
             context = {
+                'active_user': user,
                 'todos': todos,
                 'error': 'todo is required'
             }
-            return render(request, 'todoapp/home.html', context)
+            return render_to_response('todoapp/home.html', context)
         new_todo = Todo(user=user, text=todo, is_completed=status)
         new_todo.save()
         return redirect('/todo/')
@@ -55,9 +59,25 @@ def add_todo(request):
 
 
 def status(request):
-    pass
+    if request.POST:
+        for k, v in request.POST.items():
+            if k.startswith('stodo'):
+                todo_id = int(k[5:])
+                todo = Todo.objects.get(id=todo_id)
+                if todo.is_completed:
+                    todo.is_completed = False
+                else:
+                    todo.is_completed = True
+                todo.save()
+                return redirect('/todo/')
+            elif k.startswith('dtodo'):
+                todo_id = int(k[5:])
+                todo = Todo.objects.get(id=todo_id)
+                todo.delete()
+                return redirect('/todo/')
+    return redirect('/todo/')
 
-
+@login_required
 def export_view(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="todo.csv"'
@@ -70,7 +90,7 @@ def export_view(request):
         writer.writerow([todo.user, todo.text, todo.is_completed, todo.created, todo.modified])
     return response
 
-
+@login_required
 def import_view(request):
     if request.POST:
         path = request.FILES['path']
@@ -92,3 +112,14 @@ def import_view(request):
             new_todo = Todo(user=request.user, text=todo, is_completed=todo_status)
             new_todo.save()
     return redirect('/todo/')
+
+
+@login_required
+def statistics_view(request):
+    completed_todo_count = Todo.objects.filter(user=request.user, is_completed=True).count()
+    not_completed_todo_count = Todo.objects.filter(user=request.user, is_completed=False).count()
+    context = {
+        'completed': completed_todo_count,
+        'not_completed': not_completed_todo_count
+    }
+    return render(request, 'todoapp/statistic.html', context)

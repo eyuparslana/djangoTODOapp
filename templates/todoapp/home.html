@@ -1,0 +1,139 @@
+{% extends 'todoapp/base.html' %}
+{% block content %}
+    <div class="main-container">
+        <h2>
+            Todo App
+        </h2>
+        <h6>
+            A Simple Todo App
+        </h6>
+    </div>
+    <form action="{% url 'add' %}" method="post">
+        {% csrf_token %}
+        <div class="float-left">
+            <div class="input-group dropdown">
+                <input type="text" placeholder="New Todo" name="todo" class="form-control">
+                <select name="status" class="custom-select">
+                    <option name="completed" value="1" selected>Completed</option>
+                    <option name="not_completed" value="0">Not Completed</option>
+                </select>
+                {% if error %}
+                    *{{ error }}
+                {% endif %}
+                <button type="submit" class="btn btn-outline-success">
+                    <b>CREATE</b>
+                </button>
+            </div>
+
+        </div>
+    </form>
+    <div class="btn-group wrap float-right" role="group" aria-label="Basic example">
+        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+            {% csrf_token %}
+            <div class="input-group">
+                <div class="custom-file">
+                    <input name="path" type="file" class="custom-file-input">
+                    <label style="text-align: left;" class="custom-file-label">Choose file</label>
+                </div>
+                <div class="input-group-append">
+                    <button formaction="{% url 'import' %}" class="btn btn-primary" type="submit">IMPORT</button>
+                </div>
+        </form>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button formaction="{% url 'export' %}" type="submit" class="btn btn-secondary">
+            <b>EXPORT</b>
+        </button>
+    </form>
+    </div>
+    <div>
+        <br>
+        <br>
+    </div>
+    <div class="table-responsive">
+        <form class="form-control" method="post">
+            {% csrf_token %}
+            <table style="width:100%" class="table table-hover">
+                <tr>
+                    <th>User</th>
+                    <th>Todo</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Operation</th>
+                </tr>
+                {% for todo in todos %}
+                    <tr>
+                        <td><b>{{ todo.user }}</b></td>
+                        <td>{{ todo.text }}</td>
+                        {% if todo.is_completed %}
+                            <td>
+                                <button disabled style="background: darkgreen; color: white"
+                                        class="btn btn-outline-success"><b>Completed</b>
+                                </button>
+                            </td>
+                        {% else %}
+                            <td>
+                                <button disabled style="background: darkgrey; color: black"
+                                        class="btn btn-outline-secondary"><b>Not Completed</b>
+                                </button>
+                            </td>
+                        {% endif %}
+                        <td>{{ todo.created }}</td>
+                        <td>{{ todo.modified }}</td>
+
+                        {% if todo.user == active_user %}
+                            <td>
+                                {% if todo.is_completed %}
+                                    <button formaction="{% url 'status' %}" name="stodo{{ todo.id }}"
+                                            class="btn btn-dark">
+                                        <b>Not Complete</b></button>
+                                {% else %}
+                                    <button formaction="{% url 'status' %}" name="stodo{{ todo.id }}"
+                                            class="btn btn-info"><b>Complete</b>
+                                    </button>
+                                {% endif %}
+                                <button formaction="{% url 'status' %}" name="dtodo{{ todo.id }}"
+                                        class="btn btn-danger"><b>Delete</b></button>
+                            </td>
+                        {% else %}
+                            <td>
+                                {% if todo.is_completed %}
+                                    <button disabled class="btn btn-dark"><b>Not Complete</b></button>
+                                {% else %}
+                                    <button disabled class="btn btn-info"><b>Complete</b></button>
+                                {% endif %}
+                                <button disabled class="btn btn-danger"><b>Delete</b></button>
+                            </td>
+                        {% endif %}
+
+                    </tr>
+                {% endfor %}
+            </table>
+        </form>
+    </div>
+    <div>
+        {% if todos.has_other_pages %}
+            <ul class="pagination">
+                {% if todos.has_previous %}
+                    <li><a href="?page={{ todos.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in todos.paginator.page_range %}
+                    {% if todos.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if todos.has_next %}
+                    <li><a href="?page={{ todos.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}
